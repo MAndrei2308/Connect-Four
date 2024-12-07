@@ -49,6 +49,14 @@ def get_params():
         sys.exit(1)
     return rows, columns
 
+# verificarea daca tabla de joc este plina (remiza)
+def if_board_full(board):
+    for row in board:
+        for cell in row:
+            if cell == 0:
+                return False
+    return True
+
 # verificarea daca un jucator a castigat
 def if_won(board, player):
     for i in range(len(board)):
@@ -66,6 +74,16 @@ def if_won(board, player):
                 # verificarea pe diagonala secundara
                 if i + 3 < len(board) and j - 3 >= 0 and board[i + 1][j - 1] == player and board[i + 2][j - 2] == player and board[i + 3][j - 3] == player:
                     return True
+    return False
+
+def check_end_game(board, player):
+    if if_won(board, player):
+        print(f"Player {player} has won!")
+        return True
+    if if_board_full(board):
+        print("It's a tie!")
+        return True
+
 
 # rularea jocului
 def run_game():
@@ -76,14 +94,16 @@ def run_game():
     current_player = 1
     
     while True:
-        column = int(input(f"Player {current_player}, please enter a column: "))
+        try:
+            column = int(input(f"Player {current_player}, please enter a column: "))
+        except ValueError:
+            print("Invalid column. Please enter an integer value.")
+            continue
         if if_valid_move(board, column):
             apply_move(board, column, current_player)
             print_board(board)
-            if if_won(board, current_player):
-                print(f"Player {current_player} has won!")
+            if check_end_game(board, current_player):
                 break
             current_player = 3 - current_player
-
 
 run_game()

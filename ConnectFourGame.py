@@ -1,7 +1,6 @@
-# initializarea tablei de joc
 import sys
 
-
+# initializarea tablei de joc
 def initialize_board(rows, columns):
     board = []
     for i in range(rows):
@@ -16,6 +15,7 @@ def print_board(board):
         print(row)
     print()
 
+# aplicarea mutarii
 def apply_move(board, column, player):
     for i in range(len(board) - 1, -1, -1):
         if board[i][column] == 0:
@@ -23,6 +23,7 @@ def apply_move(board, column, player):
             return True
     return False
 
+# validarea mutarii
 def if_valid_move(board, column):
     if column < 0 or column >= len(board[0]):
         print("Invalid column. Please enter a value between 0 and", len(board[0]) - 1)
@@ -32,7 +33,7 @@ def if_valid_move(board, column):
         return False
     return True
 
-# rulara jocului
+# obtinerea parametrilor
 def get_params():
     if len(sys.argv) != 3:
         print("Usage: python ConnectFourGame.py rows columns")
@@ -48,6 +49,25 @@ def get_params():
         sys.exit(1)
     return rows, columns
 
+# verificarea daca un jucator a castigat
+def if_won(board, player):
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            if board[i][j] == player:
+                # verificarea pe linie
+                if j + 3 < len(board[i]) and board[i][j + 1] == player and board[i][j + 2] == player and board[i][j + 3] == player:
+                    return True
+                # verificarea pe coloana
+                if i + 3 < len(board) and board[i + 1][j] == player and board[i + 2][j] == player and board[i + 3][j] == player:
+                    return True
+                # verificarea pe diagonala principala
+                if i + 3 < len(board) and j + 3 < len(board[i]) and board[i + 1][j + 1] == player and board[i + 2][j + 2] == player and board[i + 3][j + 3] == player:
+                    return True
+                # verificarea pe diagonala secundara
+                if i + 3 < len(board) and j - 3 >= 0 and board[i + 1][j - 1] == player and board[i + 2][j - 2] == player and board[i + 3][j - 3] == player:
+                    return True
+
+# rularea jocului
 def run_game():
     rows, columns = get_params()
     board = initialize_board(rows, columns)
@@ -60,6 +80,9 @@ def run_game():
         if if_valid_move(board, column):
             apply_move(board, column, current_player)
             print_board(board)
+            if if_won(board, current_player):
+                print(f"Player {current_player} has won!")
+                break
             current_player = 3 - current_player
 
 

@@ -76,6 +76,7 @@ def if_won(board, player):
                     return True
     return False
 
+# verificarea daca jocul s-a terminat
 def check_end_game(board, player):
     if if_won(board, player):
         print(f"Player {player} has won!")

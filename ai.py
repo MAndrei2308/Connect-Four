@@ -10,6 +10,7 @@ class AI:
         while True:
             move = random.randint(0, len(board[0]) - 1)
             if board[0][move] == 0:
-                return move
-        
+                self.best_move = move
+                break
+        return self.best_move
     

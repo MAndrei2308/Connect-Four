@@ -69,25 +69,35 @@ class ConnectFour:
         return False
     
     def check_end_game(self):
-        if self.if_won(self.current_player):
-            self.winner = self.current_player
+        if self.if_won(1):
+            self.winner = "Player 1"
+            self.game_ended = True
+        elif self.if_won(2):
+            self.winner = "Player 2"
             self.game_ended = True
         elif self.if_board_full():
             self.game_ended = True
         return self.game_ended
+        
+    def get_move(self):
+        if isinstance(self.current_player, AI):
+            column = self.current_player.easy_move(self.board)
+            print(f"{self.current_player.difficulty} AI chose column {column}")
+        else:
+            try:    
+                column = int(input(f"{self.current_player}, enter column: "))
+            except ValueError:
+                print("Invalid column. Please enter an integer value.")
+                return None
+        return column
     
     def run_game(self):
         self.print_board()
         while not self.game_ended:
-            if isinstance(self.current_player, AI):
-                column = self.current_player.easy_move(self.board)
-                print(f"{self.current_player.difficulty} AI chose column {column}")
-            else:
-                try:    
-                    column = int(input(f"{self.current_player}, enter column: "))
-                except ValueError:
-                    print("Invalid column. Please enter an integer value.")
-                    continue
+            column = self.get_move()
+            if column is None:
+                continue
+
             if self.if_valid_move(column):
                 if self.current_player == self.player1:
                     player_value = 1
@@ -106,7 +116,7 @@ class ConnectFour:
                         self.current_player = self.player1
             else:
                 print("Invalid move. Please try again.")
-                continue
+        print("Game over.")
 
 def get_params():
     if len(sys.argv) != 5:
@@ -131,7 +141,21 @@ if __name__ == "__main__":
     player1 = "human1"
     if oponent_type == "human":
         player2 = "human2"
-    else:
+        if first_player == "human1":
+            first_player = player1
+        elif first_player == "human2":
+            first_player = player2 
+        else:
+            print("Invalid first player. Please choose human1 or human2.")
+            sys.exit(1)
+    elif oponent_type == "computer":
         player2 = AI("easy")
+        if first_player == "human":
+            first_player = player1
+        elif first_player == "computer":
+            first_player = player2
+        else:
+            print("Invalid first player. Please choose human or computer.")
+            sys.exit(1)
     game = ConnectFour(player1, player2, rows, columns, first_player)
     game.run_game()

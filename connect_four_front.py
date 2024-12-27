@@ -75,6 +75,29 @@ def show_about():
             if back_button:
                 running = False
 
+def show_play():
+    running = True
+    while running:
+        screen.fill(WHITE)
+        text_surface = FONT_LARGE.render("Play", True, BLACK)
+        screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, HEIGHT // 6))
+
+        pvp_button = draw_button("Player vs Player", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3, 250, 50, GRAY, BLUE)
+        pvc_button = draw_button("Player vs Computer", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + 100, 250, 50, GRAY, BLUE)
+        back_button = draw_button("Back", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + 200, 250, 50, GRAY, BLUE)
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if pvp_button:
+                print("Player vs Player button pressed")
+            if pvc_button:
+                print("Player vs Computer button pressed")
+            if back_button:
+                running = False
+
 def show_menu():
     running = True
     while running:
@@ -96,6 +119,7 @@ def show_menu():
                 sys.exit()
             if play_button:
                 print("Play button pressed")
+                show_play()
             if about_button:
                 print("About button pressed")
                 show_about()

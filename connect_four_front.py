@@ -51,9 +51,21 @@ def show_about():
     while running:
         screen.fill(WHITE)
         text_surface = FONT_MEDIUM.render("About", True, BLACK)
-        screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, HEIGHT // 3))
+        screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, HEIGHT // 6))
 
-        back_button = draw_button("Back", BLACK, FONT_SMALL, WIDTH // 2 - 100, HEIGHT // 2, 200, 50, GRAY, BLUE)
+        about_text = [
+            "Connect Four is a two-player connection game.",
+            "Players take turns dropping colored discs into a column.",
+            "The first to align four discs horizontally, vertically,",
+            "or diagonally wins the game!",
+            "Challenge yourself or play against AI!"
+        ]
+
+        for i, line in enumerate(about_text):
+            line_surface = FONT_SMALL.render(line, True, BLACK)
+            screen.blit(line_surface, (WIDTH // 2 - line_surface.get_width() // 2, HEIGHT // 3 + i * 40))
+
+        back_button = draw_button("Back", BLACK, FONT_SMALL, WIDTH // 2 - 100, HEIGHT - 200, 200, 50, GRAY, BLUE)
         pygame.display.flip()
 
         for event in pygame.event.get():

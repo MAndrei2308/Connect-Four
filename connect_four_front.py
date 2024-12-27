@@ -95,8 +95,36 @@ def show_play():
                 print("Player vs Player button pressed")
             if pvc_button:
                 print("Player vs Computer button pressed")
+                show_pvc()
             if back_button:
                 running = False
+
+def show_pvc():
+    running = True
+    while running:
+        screen.fill(WHITE)
+        text_surface = FONT_LARGE.render("Player vs Computer", True, BLACK)
+        screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, HEIGHT // 6))
+
+        easy_button = draw_button("Easy", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3, 250, 50, GRAY, BLUE)
+        medium_button = draw_button("Medium", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + 100, 250, 50, GRAY, BLUE)
+        hard_button = draw_button("Hard", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + 200, 250, 50, GRAY, BLUE)
+        back_button = draw_button("Back", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + 300, 250, 50, GRAY, BLUE)
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if easy_button:
+                print("Easy button pressed")
+            if medium_button:
+                print("Medium button pressed")
+            if hard_button:
+                print("Hard button pressed")
+            if back_button:
+                running = False
+                
 
 def show_menu():
     running = True

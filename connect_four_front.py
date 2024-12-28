@@ -1,6 +1,7 @@
 import pygame
 import sys
 
+from connect_four import ConnectFour
 from constants import Constants
 
 
@@ -10,6 +11,11 @@ pygame.init()
 # Dimensiuni fereastra si afisare
 WIDTH = 700
 HEIGHT = 700
+ROWS = 6
+COLUMNS = 9
+CELL_SIZE = WIDTH // COLUMNS
+RADIUS = CELL_SIZE // 2 - 5
+
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Connect Four")
 
@@ -93,6 +99,7 @@ def show_play():
                 sys.exit()
             if pvp_button:
                 print("Player vs Player button pressed")
+                show_pvp()
             if pvc_button:
                 print("Player vs Computer button pressed")
                 show_pvc()
@@ -125,6 +132,59 @@ def show_pvc():
             if back_button:
                 running = False
                 
+def draw_board(board):
+    for row in range(ROWS):
+        for col in range(COLUMNS):
+            pygame.draw.rect(screen, BLUE, (col * CELL_SIZE, row * CELL_SIZE + CELL_SIZE, CELL_SIZE, CELL_SIZE))
+            pygame.draw.circle(screen, WHITE, (col * CELL_SIZE + CELL_SIZE // 2, row * CELL_SIZE + CELL_SIZE + CELL_SIZE // 2), RADIUS)
+    for row in range(ROWS):
+        for col in range(COLUMNS):
+            if board[row][col] == 1:
+                pygame.draw.circle(screen, RED, (col * CELL_SIZE + CELL_SIZE // 2, row * CELL_SIZE + CELL_SIZE + CELL_SIZE // 2), RADIUS)
+            elif board[row][col] == 2:
+                pygame.draw.circle(screen, YELLOW, (col * CELL_SIZE + CELL_SIZE // 2, row * CELL_SIZE + CELL_SIZE + CELL_SIZE // 2), RADIUS)
+    pygame.display.update()
+
+def get_column(mouse_x):
+    return mouse_x // CELL_SIZE
+
+def show_pvp():
+    game = ConnectFour("Player 1", "Player 2", ROWS, COLUMNS, "Player 1")
+    running = True
+    turn = 1 # Player 1
+
+    while running:
+        draw_board(game.board)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                column = get_column(event.pos[0])
+                if game.if_valid_move(column):
+                    game.apply_move(column, turn)
+
+                    if game.check_end_game():
+                        print("Game ended")
+                        if game.winner:
+                            winner_text = f"{game.winner}, wins!"
+                        else:
+                            winner_text = "It's a tie!"
+                        display_end_message(winner_text)
+                        running = False
+                        break
+                
+                if turn == 1:
+                    turn = 2
+                else:
+                    turn = 1
+
+def display_end_message(message):
+    screen.fill(WHITE)
+    text_surface = FONT_MEDIUM.render(message, True, BLACK)
+    screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, HEIGHT // 2))
+    pygame.display.flip()
+    pygame.time.wait(3000)
 
 def show_menu():
     running = True

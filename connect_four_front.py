@@ -12,7 +12,7 @@ pygame.init()
 WIDTH = 700
 HEIGHT = 700
 ROWS = 6
-COLUMNS = 9
+COLUMNS = 7
 CELL_SIZE = WIDTH // COLUMNS
 RADIUS = CELL_SIZE // 2 - 5
 
@@ -99,7 +99,7 @@ def show_play():
                 sys.exit()
             if pvp_button:
                 print("Player vs Player button pressed")
-                show_pvp()
+                show_pvp("Player 1", "Player 2", ROWS, COLUMNS, 1)
             if pvc_button:
                 print("Player vs Computer button pressed")
                 show_pvc()
@@ -148,10 +148,10 @@ def draw_board(board):
 def get_column(mouse_x):
     return mouse_x // CELL_SIZE
 
-def show_pvp():
-    game = ConnectFour("Player 1", "Player 2", ROWS, COLUMNS, "Player 1")
+def show_pvp(player1_name, player2_name, rows, columns, first_player):
+    game = ConnectFour(player1_name, player2_name, rows, columns, first_player)
     running = True
-    turn = 1 # Player 1
+    turn = first_player
 
     while running:
         draw_board(game.board)
@@ -215,4 +215,4 @@ def show_menu():
                 pygame.quit()
                 sys.exit()
 
-show_menu()
+#show_menu()

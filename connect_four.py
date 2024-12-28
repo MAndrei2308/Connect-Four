@@ -2,7 +2,6 @@ import sys
 
 from ai import AI
 
-
 class ConnectFour:
     def __init__(self, player1, player2, rows, columns, first_player):
         self.player1 = player1
@@ -143,11 +142,19 @@ if __name__ == "__main__":
         player2 = "human2"
         if first_player == "human1":
             first_player = player1
+            first_player_front = 1
         elif first_player == "human2":
             first_player = player2 
+            first_player_front = 2
         else:
             print("Invalid first player. Please choose human1 or human2.")
             sys.exit(1)
+
+        # Fronend
+        from connect_four_front import show_pvp
+        show_pvp(player1, player2, rows, columns, first_player_front)
+        sys.exit(0)
+
     elif oponent_type == "computer":
         player2 = AI("easy")
         if first_player == "human":

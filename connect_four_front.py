@@ -1,18 +1,19 @@
 import pygame
 import sys
 
-from connect_four import ConnectFour
+from connect_four import ConnectFour, get_params
 from constants import Constants
 
 
 
 pygame.init()
 
+_, ROWS, COLUMNS, first_player_from_backend = get_params()
+
 # Dimensiuni fereastra si afisare
 WIDTH = 700
 HEIGHT = 700
-ROWS = 6
-COLUMNS = 7
+
 CELL_SIZE = WIDTH // COLUMNS
 RADIUS = CELL_SIZE // 2 - 5
 
@@ -148,8 +149,13 @@ def draw_board(board):
 def get_column(mouse_x):
     return mouse_x // CELL_SIZE
 
-def show_pvp(player1_name, player2_name, rows, columns, first_player):
-    game = ConnectFour(player1_name, player2_name, rows, columns, first_player)
+def show_pvp():
+    print(f"Starting in PvP mode with {ROWS} rows and {COLUMNS} columns")
+    if first_player_from_backend == "human1":
+        first_player = 1
+    elif first_player_from_backend == "human2":
+        first_player = 2 
+    game = ConnectFour("Player1", "Player2", ROWS, COLUMNS, first_player)
     running = True
     turn = first_player
 
@@ -215,4 +221,4 @@ def show_menu():
                 pygame.quit()
                 sys.exit()
 
-#show_menu()
+# show_menu()

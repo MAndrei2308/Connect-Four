@@ -2,17 +2,19 @@ import pygame
 import sys
 
 from ai import AI
-from connect_four import ConnectFour, get_params
+from connect_four import ConnectFour, get_params, if_terminal_input
 from constants import Constants
 
 
 
 pygame.init()
 
-# _, ROWS, COLUMNS, first_player = get_params()
-ROWS = 6
-COLUMNS = 7
-first_player = "human1"
+if if_terminal_input():
+    _, ROWS, COLUMNS, first_player = get_params()
+else:
+    ROWS = 6
+    COLUMNS = 7
+    first_player = "human1"
 
 # Dimensiuni fereastra si afisare
 WIDTH = 700
@@ -287,4 +289,8 @@ def show_menu():
                 pygame.quit()
                 sys.exit()
 
-show_menu()
+if __name__ == "__main__":
+    if not if_terminal_input():
+        show_menu()
+    pygame.quit()
+    sys.exit()

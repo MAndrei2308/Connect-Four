@@ -135,8 +135,18 @@ def get_params():
 
     return oponent_type, rows, columns, first_player
 
+def if_terminal_input():
+    return len(sys.argv) == 5
+
 if __name__ == "__main__":
-    oponent_type, rows, columns, first_player = get_params()
+    if if_terminal_input():
+        oponent_type, rows, columns, first_player = get_params()
+    else:
+        oponent_type = "human"
+        rows = 6
+        columns = 7
+        first_player = "human1"
+        
     player1 = "human1"
     if oponent_type == "human":
         player2 = "human2"
@@ -162,5 +172,15 @@ if __name__ == "__main__":
         else:
             print("Invalid first player. Please choose human or computer.")
             sys.exit(1)
-    game = ConnectFour(player1, player2, rows, columns, first_player)
-    game.run_game()
+
+        # Fronend
+        from connect_four_front import show_pvc
+        show_pvc()
+        sys.exit(0)
+
+    else:
+        print("Invalid oponent type. Please choose human or computer.")
+        sys.exit(1)
+        
+    # game = ConnectFour(player1, player2, rows, columns, first_player)
+    # game.run_game()

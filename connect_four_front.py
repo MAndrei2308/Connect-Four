@@ -14,13 +14,13 @@ if if_terminal_input():
 else:
     ROWS = 6
     COLUMNS = 7
-    first_player = "human1"
+    first_player = "human"
 
 # Dimensiuni fereastra si afisare
 WIDTH = 700
 HEIGHT = 700
 
-CELL_SIZE = WIDTH // COLUMNS
+CELL_SIZE = min(WIDTH // COLUMNS, (HEIGHT-200) // ROWS)
 RADIUS = CELL_SIZE // 2 - 5
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
@@ -146,15 +146,18 @@ def start_pvc_game(difficulty):
     ai_player = AI(difficulty)
     game = ConnectFour("Player", f"Computer {difficulty}", ROWS, COLUMNS, 1)
     running = True
-    if first_player == "human":
-        turn = 1
-    else:
+    if first_player == "computer":
         turn = 2
+    else:
+        turn = 1
+
+    text_surface = FONT_MEDIUM.render(f"Player vs Computer ({difficulty})", True, BLACK)
 
     while running:
         pygame.time.wait(200)
         game.print_board()
         draw_board(game.board)
+        screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, 50))
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -197,33 +200,43 @@ def start_pvc_game(difficulty):
                 turn = 1
                 
 def draw_board(board):
+    x_offset = (WIDTH - COLUMNS * CELL_SIZE) // 2
+    y_offset = (HEIGHT - 100 - (ROWS * CELL_SIZE + CELL_SIZE)) // 2
     for row in range(ROWS):
         for col in range(COLUMNS):
-            pygame.draw.rect(screen, BLUE, (col * CELL_SIZE, row * CELL_SIZE + CELL_SIZE, CELL_SIZE, CELL_SIZE))
-            pygame.draw.circle(screen, WHITE, (col * CELL_SIZE + CELL_SIZE // 2, row * CELL_SIZE + CELL_SIZE + CELL_SIZE // 2), RADIUS)
+            pygame.draw.rect(screen, BLUE, (col * CELL_SIZE + x_offset, row * CELL_SIZE + CELL_SIZE + y_offset, CELL_SIZE, CELL_SIZE))
+            pygame.draw.circle(screen, WHITE, (col * CELL_SIZE + x_offset + CELL_SIZE // 2, row * CELL_SIZE + y_offset + CELL_SIZE + CELL_SIZE // 2), RADIUS)
     for row in range(ROWS):
         for col in range(COLUMNS):
             if board[row][col] == 1:
-                pygame.draw.circle(screen, RED, (col * CELL_SIZE + CELL_SIZE // 2, row * CELL_SIZE + CELL_SIZE + CELL_SIZE // 2), RADIUS)
+                pygame.draw.circle(screen, RED, (col * CELL_SIZE + x_offset + CELL_SIZE // 2, row * CELL_SIZE + y_offset + CELL_SIZE + CELL_SIZE // 2), RADIUS)
             elif board[row][col] == 2:
-                pygame.draw.circle(screen, YELLOW, (col * CELL_SIZE + CELL_SIZE // 2, row * CELL_SIZE + CELL_SIZE + CELL_SIZE // 2), RADIUS)
+                pygame.draw.circle(screen, YELLOW, (col * CELL_SIZE + x_offset + CELL_SIZE // 2, row * CELL_SIZE + y_offset + CELL_SIZE + CELL_SIZE // 2), RADIUS)
     pygame.display.update()
 
 def get_column(mouse_x):
-    return mouse_x // CELL_SIZE
+    x_offset = (WIDTH - COLUMNS * CELL_SIZE) // 2
+    return (mouse_x - x_offset) // CELL_SIZE
 
 def show_pvp():
+
+    screen.fill(WHITE)
+    
     print(f"Starting in PvP mode with {ROWS} rows and {COLUMNS} columns")
-    if first_player == "human1":
-        turn = 1
-    elif first_player == "human2":
+    if first_player == "human2":
         turn = 2 
+    else:
+        turn = 1
     game = ConnectFour("Player1", "Player2", ROWS, COLUMNS, first_player)
     running = True
+
+    text_surface = FONT_MEDIUM.render(f"Player vs Player", True, BLACK)
 
     while running:
         game.print_board()
         draw_board(game.board)
+        screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, 50))
+        pygame.display.flip()
         pygame.time.wait(200)
 
         for event in pygame.event.get():
@@ -248,10 +261,10 @@ def show_pvp():
                         running = False
                         break
                 
-                if turn == 1:
-                    turn = 2
-                else:
-                    turn = 1
+                    if turn == 1:
+                        turn = 2
+                    else:
+                        turn = 1
 
 def display_end_message(message):
     screen.fill(WHITE)

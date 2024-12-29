@@ -1,6 +1,7 @@
 import pygame
 import sys
 
+from ai import AI
 from connect_four import ConnectFour, get_params
 from constants import Constants
 
@@ -8,7 +9,10 @@ from constants import Constants
 
 pygame.init()
 
-_, ROWS, COLUMNS, first_player_from_backend = get_params()
+# _, ROWS, COLUMNS, first_player = get_params()
+ROWS = 6
+COLUMNS = 7
+first_player = "human1"
 
 # Dimensiuni fereastra si afisare
 WIDTH = 700
@@ -100,7 +104,7 @@ def show_play():
                 sys.exit()
             if pvp_button:
                 print("Player vs Player button pressed")
-                show_pvp("Player 1", "Player 2", ROWS, COLUMNS, 1)
+                show_pvp()
             if pvc_button:
                 print("Player vs Computer button pressed")
                 show_pvc()
@@ -126,12 +130,62 @@ def show_pvc():
                 sys.exit()
             if easy_button:
                 print("Easy button pressed")
+                start_pvc_game("easy")
             if medium_button:
                 print("Medium button pressed")
+                start_pvc_game("medium")
             if hard_button:
                 print("Hard button pressed")
+                start_pvc_game("hard")
             if back_button:
                 running = False
+
+def start_pvc_game(difficulty):
+    ai_player = AI(difficulty)
+    game = ConnectFour("Player", f"Computer {difficulty}", ROWS, COLUMNS, 1)
+    running = True
+    if first_player == "human":
+        turn = 1
+    else:
+        turn = 2
+
+    while running:
+        draw_board(game.board)
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if turn == 1 and event.type == pygame.MOUSEBUTTONDOWN:
+                column = get_column(event.pos[0])
+                if game.if_valid_move(column):
+                    game.apply_move(column, turn)
+
+                    if game.check_end_game():
+                        print("Game ended")
+                        if game.winner:
+                            winner_text = f"{game.winner}, wins!"
+                        else:
+                            winner_text = "It's a tie!"
+                        display_end_message(winner_text)
+                        running = False
+                        break
+                    turn = 2
+        if turn == 2:
+            pygame.time.wait(200)
+            column = ai_player.get_move(game.board)
+            if game.if_valid_move(column):
+                game.apply_move(column, turn)
+
+                if game.check_end_game():
+                    print("Game ended")
+                    if game.winner:
+                        winner_text = f"{game.winner}, wins!"
+                    else:
+                        winner_text = "It's a tie!"
+                    display_end_message(winner_text)
+                    running = False
+                    break
+                turn = 1
                 
 def draw_board(board):
     for row in range(ROWS):
@@ -151,13 +205,12 @@ def get_column(mouse_x):
 
 def show_pvp():
     print(f"Starting in PvP mode with {ROWS} rows and {COLUMNS} columns")
-    if first_player_from_backend == "human1":
-        first_player = 1
-    elif first_player_from_backend == "human2":
-        first_player = 2 
+    if first_player == "human1":
+        turn = 1
+    elif first_player == "human2":
+        turn = 2 
     game = ConnectFour("Player1", "Player2", ROWS, COLUMNS, first_player)
     running = True
-    turn = first_player
 
     while running:
         draw_board(game.board)
@@ -221,4 +274,4 @@ def show_menu():
                 pygame.quit()
                 sys.exit()
 
-# show_menu()
+show_menu()

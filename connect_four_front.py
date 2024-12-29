@@ -150,6 +150,7 @@ def start_pvc_game(difficulty):
         turn = 2
 
     while running:
+        pygame.time.wait(200)
         draw_board(game.board)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -171,7 +172,6 @@ def start_pvc_game(difficulty):
                         break
                     turn = 2
         if turn == 2:
-            pygame.time.wait(200)
             column = ai_player.get_move(game.board)
             if game.if_valid_move(column):
                 game.apply_move(column, turn)

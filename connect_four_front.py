@@ -151,6 +151,7 @@ def start_pvc_game(difficulty):
 
     while running:
         pygame.time.wait(200)
+        game.print_board()
         draw_board(game.board)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -162,6 +163,9 @@ def start_pvc_game(difficulty):
                     game.apply_move(column, turn)
 
                     if game.check_end_game():
+                        game.print_board()
+                        draw_board(game.board)
+                        pygame.time.wait(500)
                         print("Game ended")
                         if game.winner:
                             winner_text = f"{game.winner}, wins!"
@@ -177,6 +181,9 @@ def start_pvc_game(difficulty):
                 game.apply_move(column, turn)
 
                 if game.check_end_game():
+                    game.print_board()
+                    draw_board(game.board)
+                    pygame.time.wait(1000)
                     print("Game ended")
                     if game.winner:
                         winner_text = f"{game.winner}, wins!"
@@ -213,7 +220,10 @@ def show_pvp():
     running = True
 
     while running:
+        game.print_board()
         draw_board(game.board)
+        pygame.time.wait(200)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -224,6 +234,9 @@ def show_pvp():
                     game.apply_move(column, turn)
 
                     if game.check_end_game():
+                        game.print_board()
+                        draw_board(game.board)
+                        pygame.time.wait(500)
                         print("Game ended")
                         if game.winner:
                             winner_text = f"{game.winner}, wins!"

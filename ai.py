@@ -11,8 +11,8 @@ class AI:
             return self.easy_move(board)
         elif self.difficulty == "medium":
             return self.medium_move(board)
-        # elif self.difficulty == "hard":
-        #     return self.hard_move(board)
+        elif self.difficulty == "hard":
+            return self.hard_move(board)
 
     def easy_move(self, board):
         while True:
@@ -20,18 +20,21 @@ class AI:
             if board[0][move] == 0:
                 self.best_move = move
                 break
+        print ("AI chose a random move")
         return self.best_move
     
     def medium_move(self, board):
         # check if AI can win
         for col in range(len(board[0])):
             if self.if_valid_move(col, board) and self.check_winning_move(col, 2, board):
+                print ("AI found a winning move")
                 self.best_move = col
                 return self.best_move
             
         # check if player can win and block
         for col in range(len(board[0])):
             if self.if_valid_move(col, board) and self.check_winning_move(col, 1, board):
+                print ("AI found a blocking move")
                 self.best_move = col
                 return self.best_move
             
@@ -42,13 +45,14 @@ class AI:
         return board[0][column] == 0
     
     def check_winning_move(self, column, player, board):
-        for i in range(len(board)):
+        for i in range(len(board)-1, 0, -1):
             if board[i][column] == 0:
                 board[i][column] = player
                 if self.if_won(player, board):
                     board[i][column] = 0
                     return True
                 board[i][column] = 0
+                return False
         return False
     
     def if_won(self, player, board):
@@ -68,3 +72,6 @@ class AI:
                     if i + 3 < len(board) and j - 3 >= 0 and board[i + 1][j - 1] == player and board[i + 2][j - 2] == player and board[i + 3][j - 3] == player:
                         return True
         return False
+
+    def hard_move(self, board):
+        return self.easy_move(board)

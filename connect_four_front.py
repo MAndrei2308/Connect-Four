@@ -4,6 +4,7 @@ import sys
 from ai import AI
 from connect_four import ConnectFour, get_params, if_terminal_input
 from game_timer import GameTimer
+from statistics_1 import Statistics
 
 
 
@@ -26,7 +27,7 @@ RADIUS = CELL_SIZE // 2 - 5
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Connect Four")
 
-# Culori
+# Colors
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 GRAY = (169, 169, 169)
@@ -35,7 +36,7 @@ BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 GREEN = (0, 255, 0)
 
-# Fonturi
+# Fonts
 FONT_LARGE = pygame.font.Font(None, 74)
 FONT_MEDIUM = pygame.font.Font(None, 50)
 FONT_SMALL = pygame.font.Font(None, 36)
@@ -44,12 +45,15 @@ FONT_SUPER_SMALL = pygame.font.Font(None, 18)
 # Timer
 game_timer = GameTimer()
 
+# Statitics
+statistics = Statistics()
+
 
 def draw_button(text, text_color, text_font, x, y, width, height, color, hover_color):
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
 
-    # Verificare daca mouse-ul este pe buton
+    # Verify if mouse is over button
     if x < mouse[0] < x + width and y < mouse[1] < y + height:
         pygame.draw.rect(screen, hover_color, (x, y, width, height))
         if click[0] == 1:
@@ -57,7 +61,7 @@ def draw_button(text, text_color, text_font, x, y, width, height, color, hover_c
     else:
         pygame.draw.rect(screen, color, (x, y, width, height))
 
-    # Desenare text pe buton
+    # Draw text on button
     text_surface = text_font.render(text, True, text_color)
     text_rect = text_surface.get_rect(center = (x + width // 2, y + height // 2))
     screen.blit(text_surface, text_rect)
@@ -189,6 +193,7 @@ def start_pvc_game(difficulty):
                             winner_text = f"{game.winner}, wins!"
                         else:
                             winner_text = "It's a tie!"
+                        statistics.end_game(game.winner, f"{timer_text[0]:02}:{timer_text[1]:02}", "pvc_" + difficulty)
                         display_end_message(winner_text)
                         running = False
                         break
@@ -214,6 +219,8 @@ def start_pvc_game(difficulty):
                         winner_text = f"{game.winner}, wins!"
                     else:
                         winner_text = "It's a tie!"
+                    statistics.end_game(game.winner, f"{timer_text[0]:02}:{timer_text[1]:02}", "pvc_" + difficulty)
+
                     display_end_message(winner_text)
                     running = False
                     break
@@ -288,6 +295,7 @@ def show_pvp():
                         else:
                             winner_text = "It's a tie!"
                         display_end_message(winner_text)
+                        statistics.end_game(game.winner, f"{timer_text[0]:02}:{timer_text[1]:02}", "pvp")
                         running = False
                         break
                 
@@ -316,44 +324,34 @@ def draw_table(table, x, y, cell_width, cell_height, text_font = FONT_SUPER_SMAL
     for i, row in enumerate(table):
         for j, cell in enumerate(row):
             pygame.draw.rect(screen, BLACK, (x + j * cell_width, y + i * cell_height, cell_width, cell_height), 1)
-            text_surface = text_font.render(cell, True, BLACK)
+            text_surface = text_font.render(str(cell), True, BLACK)
             screen.blit(text_surface, (x + j * cell_width + 10, y + i * cell_height + 10))
 
 
 def show_statistics():
+    data = statistics.load_data()
     running = True
     while running:
         screen.fill(WHITE)
         text_surface = FONT_MEDIUM.render("Top 3 for every game mode", True, BLACK)
         screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, HEIGHT // 6 - 70))
 
-        top_pvp_table = [
-            ["Rank", "  Player1", " Player2", "    Time"],
-            ["1", " Player1", "  Player2", "   1:30"],
-            ["2", " Player2", "  Player1", "   2:00"],
-            ["3", " Player1", "  Player2", "   2:30"]
-        ]
+        top_pvp_table = [["Rank", "Winner", "Time"]]
+        for i, game in enumerate(data["pvp"]):
+            top_pvp_table.append([game["rank"], game["winner"], game["time"]])
+        
+        top_pvc_easy_table = [["Rank", "Winner", "Time"]]
+        for i, game in enumerate(data["pvc_easy"]):
+            top_pvc_easy_table.append([game["rank"], game["winner"], game["time"]])
+        
+        top_pvc_medium_table = [["Rank", "Winner", "Time"]]
+        for i, game in enumerate(data["pvc_medium"]):
+            top_pvc_medium_table.append([game["rank"], game["winner"], game["time"]])
+        
+        top_pvc_hard_table = [["Rank", "Winner", "Time"]]
+        for i, game in enumerate(data["pvc_hard"]):
+            top_pvc_hard_table.append([game["rank"], game["winner"], game["time"]])
 
-        top_pvc_easy_table = [
-            ["Rank", "Player", "Computer", "Time"],
-            ["1", "Player", "Easy", "1:00"],
-            ["2", "Computer", "Player", "1:30"],
-            ["3", "Player", "Computer", "2:00"]
-        ]
-
-        top_pvc_medium_table = [
-            ["Rank", "Player", "Computer", "Time"],
-            ["1", "Player", "Medium", "1:30"],
-            ["2", "Computer", "Player", "2:00"],
-            ["3", "Player", "Computer", "2:30"]
-        ]
-
-        top_pvc_hard_table = [
-            ["Rank", "Player", "Computer", "    Time"],
-            ["1", "Player", "Hard", "   2:00"],
-            ["2", "Computer", "Player", "   2:30"],
-            ["3", "Player", "Computer", "   3:00"]
-        ]
 
         pvp_text = FONT_SMALL.render("Player vs Player", True, BLACK)
         easy_text = FONT_SMALL.render("Player vs Computer easy", True, BLACK)
@@ -361,16 +359,16 @@ def show_statistics():
         hard_text = FONT_SMALL.render("Player vs Computer hard", True, BLACK)
 
         screen.blit(pvp_text, (WIDTH // 4 - 100, HEIGHT // 4 - 60))
-        draw_table(top_pvp_table, WIDTH // 4 - 150, HEIGHT // 4 - 30, 75, 45)
+        draw_table(top_pvp_table, WIDTH // 4 - 100, HEIGHT // 4 - 30, 75, 45)
         
         screen.blit(easy_text, (WIDTH // 4 + 200, HEIGHT // 4 - 60))
-        draw_table(top_pvc_easy_table, WIDTH // 4 + 200, HEIGHT // 4 - 30, 75, 45)
+        draw_table(top_pvc_easy_table, WIDTH // 4 + 250, HEIGHT // 4 - 30, 75, 45)
         
         screen.blit(medium_text, (WIDTH // 4 - 160, HEIGHT // 4 + 180))
-        draw_table(top_pvc_medium_table, WIDTH // 4 - 150, HEIGHT // 4 + 220, 75, 45)
+        draw_table(top_pvc_medium_table, WIDTH // 4 - 100, HEIGHT // 4 + 220, 75, 45)
 
         screen.blit(hard_text, (WIDTH // 4 + 200, HEIGHT // 4 + 180))
-        draw_table(top_pvc_hard_table, WIDTH // 4 + 200, HEIGHT // 4 + 220, 75, 45)
+        draw_table(top_pvc_hard_table, WIDTH // 4 + 250, HEIGHT // 4 + 220, 75, 45)
 
         back_button = draw_button("Back", BLACK, FONT_SMALL, WIDTH // 2 - 100, HEIGHT - 100, 200, 50, GRAY, BLUE)
         pygame.display.flip()

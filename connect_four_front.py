@@ -3,7 +3,7 @@ import sys
 
 from ai import AI
 from connect_four import ConnectFour, get_params, if_terminal_input
-from constants import Constants
+from game_timer import GameTimer
 
 
 
@@ -40,6 +40,9 @@ FONT_LARGE = pygame.font.Font(None, 74)
 FONT_MEDIUM = pygame.font.Font(None, 50)
 FONT_SMALL = pygame.font.Font(None, 36)
 FONT_SUPER_SMALL = pygame.font.Font(None, 18)
+
+# Timer
+game_timer = GameTimer()
 
 
 def draw_button(text, text_color, text_font, x, y, width, height, color, hover_color):
@@ -147,6 +150,7 @@ def start_pvc_game(difficulty):
     ai_player = AI(difficulty)
     game = ConnectFour("Player", f"Computer {difficulty}", ROWS, COLUMNS, 1)
     running = True
+    timer_text = game_timer.reset()
     if first_player == "computer":
         turn = 2
     else:
@@ -154,16 +158,24 @@ def start_pvc_game(difficulty):
 
     text_surface = FONT_MEDIUM.render(f"Player vs Computer ({difficulty})", True, BLACK)
 
+
     while running:
         pygame.time.wait(200)
         game.print_board()
         draw_board(game.board)
         screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, 50))
+        timer_text = game_timer.get_time()
+        pygame.draw.rect(screen, WHITE, (WIDTH - 90, 0, 80, 80))
+        timer_surface = FONT_SMALL.render(f"{timer_text[0]:02}:{timer_text[1]:02}", True, BLACK)
+        screen.blit(timer_surface, (WIDTH - 80, 20))
+        restart_button = draw_button("Restart", BLACK, FONT_SMALL, WIDTH // 2 - 200, HEIGHT - 80, 150, 50, GRAY, BLUE)
+        back_button = draw_button("Back", BLACK, FONT_SMALL, WIDTH // 2 + 50, HEIGHT - 80, 150, 50, GRAY, BLUE)
+        pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if turn == 1 and event.type == pygame.MOUSEBUTTONDOWN:
+            if turn == 1 and event.type == pygame.MOUSEBUTTONDOWN and if_click_on_board(event.pos[0], event.pos[1]):
                 column = get_column(event.pos[0])
                 if game.if_valid_move(column):
                     game.apply_move(column, turn)
@@ -181,6 +193,13 @@ def start_pvc_game(difficulty):
                         running = False
                         break
                     turn = 2
+            if restart_button:
+                print("Restart button pressed")
+                game = ConnectFour("Player1", "Player2", ROWS, COLUMNS, first_player)
+                turn = 1
+                timer_text = game_timer.reset()
+            if back_button:
+                running = False 
         if turn == 2:
             column = ai_player.get_move(game.board)
             if game.if_valid_move(column):
@@ -219,6 +238,9 @@ def get_column(mouse_x):
     x_offset = (WIDTH - COLUMNS * CELL_SIZE) // 2
     return (mouse_x - x_offset) // CELL_SIZE
 
+def if_click_on_board(mouse_x, mouse_y):
+    return mouse_y > 100 and mouse_y < HEIGHT - 100 and mouse_x > (WIDTH - COLUMNS * CELL_SIZE) // 2 and mouse_x < WIDTH - (WIDTH - COLUMNS * CELL_SIZE) // 2
+
 def show_pvp():
 
     screen.fill(WHITE)
@@ -230,6 +252,7 @@ def show_pvp():
         turn = 1
     game = ConnectFour("Player1", "Player2", ROWS, COLUMNS, first_player)
     running = True
+    timer_text = game_timer.reset()
 
     text_surface = FONT_MEDIUM.render(f"Player vs Player", True, BLACK)
 
@@ -237,6 +260,12 @@ def show_pvp():
         game.print_board()
         draw_board(game.board)
         screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, 50))
+        timer_text = game_timer.get_time()
+        pygame.draw.rect(screen, WHITE, (WIDTH - 90, 0, 80, 80))
+        timer_surface = FONT_SMALL.render(f"{timer_text[0]:02}:{timer_text[1]:02}", True, BLACK)
+        screen.blit(timer_surface, (WIDTH - 80, 20))
+        restart_button = draw_button("Restart", BLACK, FONT_SMALL, WIDTH // 2 - 200, HEIGHT - 80, 150, 50, GRAY, BLUE)
+        back_button = draw_button("Back", BLACK, FONT_SMALL, WIDTH // 2 + 50, HEIGHT - 80, 150, 50, GRAY, BLUE)
         pygame.display.flip()
         pygame.time.wait(200)
 
@@ -244,7 +273,7 @@ def show_pvp():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
-            if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.type == pygame.MOUSEBUTTONDOWN and if_click_on_board(event.pos[0], event.pos[1]): 
                 column = get_column(event.pos[0])
                 if game.if_valid_move(column):
                     game.apply_move(column, turn)
@@ -255,7 +284,7 @@ def show_pvp():
                         pygame.time.wait(500)
                         print("Game ended")
                         if game.winner:
-                            winner_text = f"{game.winner}, wins!"
+                            winner_text = f"{game.winner} wins in {timer_text[0]:02}:{timer_text[1]:02}!"
                         else:
                             winner_text = "It's a tie!"
                         display_end_message(winner_text)
@@ -266,6 +295,15 @@ def show_pvp():
                         turn = 2
                     else:
                         turn = 1
+            if restart_button:
+                print("Restart button pressed")
+                game = ConnectFour("Player1", "Player2", ROWS, COLUMNS, first_player)
+                turn = 1
+                timer_text = game_timer.reset()
+            if back_button:
+                running = False
+
+                
 
 def display_end_message(message):
     screen.fill(WHITE)

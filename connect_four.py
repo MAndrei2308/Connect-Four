@@ -119,7 +119,8 @@ class ConnectFour:
 
 def get_params():
     if len(sys.argv) != 5:
-        print("Usage: python ConnectFourGame.py rows columns")
+        print("Usage: python connect_four.py <tip adversar> <celule_axa_x> <celule_axa_y> [firstPlayer]")
+        print("Example: python connect_four.py human 6 7 human1")
         sys.exit(1)
     try:
         oponent_type = sys.argv[1]
@@ -139,7 +140,7 @@ def if_terminal_input():
     return len(sys.argv) == 5
 
 if __name__ == "__main__":
-    if if_terminal_input():
+    if len(sys.argv) > 1:
         oponent_type, rows, columns, first_player = get_params()
     else:
         oponent_type = "human"

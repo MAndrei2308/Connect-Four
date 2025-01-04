@@ -190,9 +190,9 @@ def start_pvc_game(difficulty):
                         pygame.time.wait(500)
                         print("Game ended")
                         if game.winner:
-                            winner_text = f"{game.winner}, wins!"
+                            winner_text = f"{game.winner}, wins in {timer_text[0]:02}:{timer_text[1]:02}!"
                         else:
-                            winner_text = "It's a tie!"
+                            winner_text = f"It's a tie! Time: {timer_text[0]:02}:{timer_text[1]:02}"
                         statistics.end_game(game.winner, f"{timer_text[0]:02}:{timer_text[1]:02}", "pvc_" + difficulty)
                         display_end_message(winner_text)
                         running = False
@@ -216,9 +216,9 @@ def start_pvc_game(difficulty):
                     pygame.time.wait(1000)
                     print("Game ended")
                     if game.winner:
-                        winner_text = f"{game.winner}, wins!"
+                        winner_text = f"{game.winner}, wins in {timer_text[0]:02}:{timer_text[1]:02}!"
                     else:
-                        winner_text = "It's a tie!"
+                        winner_text = f"It's a tie! Time: {timer_text[0]:02}:{timer_text[1]:02}"
                     statistics.end_game(game.winner, f"{timer_text[0]:02}:{timer_text[1]:02}", "pvc_" + difficulty)
 
                     display_end_message(winner_text)
@@ -293,7 +293,7 @@ def show_pvp():
                         if game.winner:
                             winner_text = f"{game.winner} wins in {timer_text[0]:02}:{timer_text[1]:02}!"
                         else:
-                            winner_text = "It's a tie!"
+                            winner_text = f"It's a tie! Time: {timer_text[0]:02}:{timer_text[1]:02}"
                         display_end_message(winner_text)
                         statistics.end_game(game.winner, f"{timer_text[0]:02}:{timer_text[1]:02}", "pvp")
                         running = False

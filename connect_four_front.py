@@ -232,9 +232,10 @@ def show_pause_menu(difficulty):
 
         resume_button = draw_button("Resume", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + i, 250, 70, GRAY, BLUE) ; i += 100
         restart_button = draw_button("Restart", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + i, 250, 70, GRAY, BLUE) ; i += 100
-        if difficulty in ["easy", "medium", "hard"]:
-            change_difficulty_button = draw_button("Change difficulty", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + i, 250, 70, GRAY, BLUE) ; i += 100
-        back_button = draw_button("Back to menu", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + i, 250, 70, GRAY, BLUE)  ; i += 100
+        if not if_terminal_input():
+            if difficulty in ["easy", "medium", "hard"]:
+                change_difficulty_button = draw_button("Change difficulty", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + i, 250, 70, GRAY, BLUE) ; i += 100
+            back_button = draw_button("Back to menu", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + i, 250, 70, GRAY, BLUE)  ; i += 100
         quit_button = draw_button("Quit", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + i, 250, 70, GRAY, BLUE) ; i += 100
 
         pygame.display.flip()
@@ -262,16 +263,17 @@ def show_pause_menu(difficulty):
                     game_timer.reset()
                     show_pvp()
                 return
-            if difficulty in ["easy", "medium", "hard"]:
-                if change_difficulty_button:
-                    print("Change difficulty button pressed")
+            if not if_terminal_input():
+                if difficulty in ["easy", "medium", "hard"]:
+                    if change_difficulty_button:
+                        print("Change difficulty button pressed")
+                        game_timer.reset()
+                        show_pvc()
+                if back_button:
+                    print("Back button pressed")
                     game_timer.reset()
-                    show_pvc()
-            if back_button:
-                print("Back button pressed")
-                game_timer.reset()
-                show_menu()
-                return
+                    show_menu()
+                    return
             if quit_button:
                 print("Quit button pressed")
                 pygame.quit()
@@ -279,7 +281,7 @@ def show_pause_menu(difficulty):
                 
 def draw_board(board):
     x_offset = (WIDTH - COLUMNS * CELL_SIZE) // 2
-    y_offset = (HEIGHT - 100 - (ROWS * CELL_SIZE + CELL_SIZE)) // 2
+    y_offset = (HEIGHT - 100 - (ROWS * CELL_SIZE + CELL_SIZE)) // 2 + 10
     for row in range(ROWS):
         for col in range(COLUMNS):
             pygame.draw.rect(screen, BLUE, (col * CELL_SIZE + x_offset, row * CELL_SIZE + CELL_SIZE + y_offset, CELL_SIZE, CELL_SIZE))

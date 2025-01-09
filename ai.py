@@ -24,17 +24,6 @@ class AI:
         return self.best_move
     
     def medium_move(self, board):
-        # check if player can win and block
-        for col in range(len(board[0])):
-            if self.if_valid_move(col, board) and self.check_winning_move(col, 1, board):
-                print ("AI found a blocking move")
-                self.best_move = col
-                return self.best_move
-            
-        # if no winning moves, choose random move
-        return self.easy_move(board)
-    
-    def hard_move(self, board):
         # check if AI can win
         for col in range(len(board[0])):
             if self.if_valid_move(col, board) and self.check_winning_move(col, 2, board):
@@ -66,6 +55,38 @@ class AI:
                 return False
         return False
     
+    def hard_move(self, board):
+        # check if AI can win
+        for col in range(len(board[0])):
+            if self.if_valid_move(col, board) and self.check_winning_move(col, 2, board):
+                print ("AI found a winning move")
+                self.best_move = col
+                return self.best_move
+            
+        # check if player can win and block
+        for col in range(len(board[0])):
+            if self.if_valid_move(col, board) and self.check_winning_move(col, 1, board):
+                print ("AI found a blocking move")
+                self.best_move = col
+                return self.best_move
+            
+        # check if AI can create a 3 in a row and win
+        for col in range(len(board[0])):
+            if self.if_valid_move(col, board) and self.check_winning_2_move(col, 2, board):
+                print ("AI found a winning 2 move")
+                self.best_move = col
+                return self.best_move
+
+        # check if player can create a 3 in a row and block
+        for col in range(len(board[0])):
+            if self.if_valid_move(col, board) and self.check_winning_2_move(col, 1, board):
+                print ("AI found a blocking 2 move")
+                self.best_move = col
+                return self.best_move
+            
+        # if no winning moves, choose random move
+        return self.easy_move(board)
+    
     def if_won(self, player, board):
         for i in range(len(board)):
             for j in range(len(board[i])):
@@ -81,5 +102,34 @@ class AI:
                         return True
                     # secondary diagonal
                     if i + 3 < len(board) and j - 3 >= 0 and board[i + 1][j - 1] == player and board[i + 2][j - 2] == player and board[i + 3][j - 3] == player:
+                        return True
+        return False
+    
+    def check_winning_2_move(self, column, player, board):
+        for i in range(len(board)-1, 0, -1):
+            if board[i][column] == 0:
+                board[i][column] = player
+                if self.if_2_won(player, board):
+                    board[i][column] = 0
+                    return True
+                board[i][column] = 0
+                return False
+        return False
+    
+    def if_2_won(self, player, board):
+        for i in range(len(board)):
+            for j in range(len(board[i])):
+                if board[i][j] == player:
+                    # horizontal
+                    if (j + 2 < len(board[i]) and board[i][j + 1] == player and board[i][j + 2] == player) and (j - 1 >= 0 and j + 3 < len(board[i]) and board[i][j - 1] == 0 and board[i][j + 3] == 0):
+                        return True
+                    # vertical
+                    if (i + 2 < len(board) and board[i + 1][j] == player and board[i + 2][j] == player) and (i + 3 < len(board) and board[i + 3][j] == 0):
+                        return True
+                    # primary diagonal
+                    if (i + 2 < len(board) and j + 2 < len(board[i]) and board[i + 1][j + 1] == player and board[i + 2][j + 2] == player) and (i - 1 >= 0 and j - 1 >= 0 and i + 3 < len(board) and j + 3 < len(board[i]) and board[i - 1][j - 1] == 0 and board[i + 3][j + 3] == 0):
+                        return True
+                    # secondary diagonal
+                    if (i + 2 < len(board) and j - 2 >= 0 and board[i + 1][j - 1] == player and board[i + 2][j - 2] == player) and (i - 1 >= 0 and j + 1 < len(board[i]) and i + 3 < len(board) and j - 3 >= 0 and board[i - 1][j + 1] == 0 and board[i + 3][j - 3] == 0):
                         return True
         return False

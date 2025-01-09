@@ -151,6 +151,7 @@ def show_pvc():
                 running = False
 
 def start_pvc_game(difficulty):
+    screen.fill(WHITE)
     ai_player = AI(difficulty)
     game = ConnectFour("Player", f"Computer {difficulty}", ROWS, COLUMNS, 1)
     running = True
@@ -172,8 +173,6 @@ def start_pvc_game(difficulty):
         pygame.draw.rect(screen, WHITE, (WIDTH - 90, 0, 80, 80))
         timer_surface = FONT_SMALL.render(f"{timer_text[0]:02}:{timer_text[1]:02}", True, BLACK)
         screen.blit(timer_surface, (WIDTH - 80, 20))
-        restart_button = draw_button("Restart", BLACK, FONT_SMALL, WIDTH // 2 - 200, HEIGHT - 80, 150, 50, GRAY, BLUE)
-        back_button = draw_button("Back", BLACK, FONT_SMALL, WIDTH // 2 + 50, HEIGHT - 80, 150, 50, GRAY, BLUE)
         pygame.display.flip()
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -198,13 +197,9 @@ def start_pvc_game(difficulty):
                         running = False
                         break
                     turn = 2
-            if restart_button:
-                print("Restart button pressed")
-                game = ConnectFour("Player1", "Player2", ROWS, COLUMNS, first_player)
-                turn = 1
-                timer_text = game_timer.reset()
-            if back_button:
-                running = False 
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                game_timer.pause()
+                show_pause_menu(difficulty)
         if turn == 2:
             column = ai_player.get_move(game.board)
             if game.if_valid_move(column):
@@ -225,6 +220,62 @@ def start_pvc_game(difficulty):
                     running = False
                     break
                 turn = 1
+
+def show_pause_menu(difficulty):
+    running = True
+    while running:
+        screen.fill(WHITE)
+        text_surface = FONT_MEDIUM.render("Pause", True, BLACK)
+        screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, HEIGHT // 6 - 50))
+
+        i = -50
+
+        resume_button = draw_button("Resume", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + i, 250, 70, GRAY, BLUE) ; i += 100
+        restart_button = draw_button("Restart", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + i, 250, 70, GRAY, BLUE) ; i += 100
+        if difficulty in ["easy", "medium", "hard"]:
+            change_difficulty_button = draw_button("Change difficulty", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + i, 250, 70, GRAY, BLUE) ; i += 100
+        back_button = draw_button("Back to menu", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + i, 250, 70, GRAY, BLUE)  ; i += 100
+        quit_button = draw_button("Quit", BLACK, FONT_SMALL, WIDTH // 2 - 125, HEIGHT // 3 + i, 250, 70, GRAY, BLUE) ; i += 100
+
+        pygame.display.flip()
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                screen.fill(WHITE)
+                game_timer.resume()
+                return
+            if resume_button:
+                screen.fill(WHITE)
+                print("Resume button pressed")
+                game_timer.resume()
+                return
+            if restart_button:
+                if difficulty in ["easy", "medium", "hard"]:
+                    print("Restart button pressed")
+                    game_timer.reset()
+                    start_pvc_game(difficulty)
+                if difficulty == "pvp":
+                    print("Restart button pressed")
+                    game_timer.reset()
+                    show_pvp()
+                return
+            if difficulty in ["easy", "medium", "hard"]:
+                if change_difficulty_button:
+                    print("Change difficulty button pressed")
+                    game_timer.reset()
+                    show_pvc()
+            if back_button:
+                print("Back button pressed")
+                game_timer.reset()
+                show_menu()
+                return
+            if quit_button:
+                print("Quit button pressed")
+                pygame.quit()
+                sys.exit()
                 
 def draw_board(board):
     x_offset = (WIDTH - COLUMNS * CELL_SIZE) // 2
@@ -271,8 +322,6 @@ def show_pvp():
         pygame.draw.rect(screen, WHITE, (WIDTH - 90, 0, 80, 80))
         timer_surface = FONT_SMALL.render(f"{timer_text[0]:02}:{timer_text[1]:02}", True, BLACK)
         screen.blit(timer_surface, (WIDTH - 80, 20))
-        restart_button = draw_button("Restart", BLACK, FONT_SMALL, WIDTH // 2 - 200, HEIGHT - 80, 150, 50, GRAY, BLUE)
-        back_button = draw_button("Back", BLACK, FONT_SMALL, WIDTH // 2 + 50, HEIGHT - 80, 150, 50, GRAY, BLUE)
         pygame.display.flip()
         pygame.time.wait(200)
 
@@ -303,13 +352,9 @@ def show_pvp():
                         turn = 2
                     else:
                         turn = 1
-            if restart_button:
-                print("Restart button pressed")
-                game = ConnectFour("Player1", "Player2", ROWS, COLUMNS, first_player)
-                turn = 1
-                timer_text = game_timer.reset()
-            if back_button:
-                running = False
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                game_timer.pause()
+                show_pause_menu("pvp")
 
                 
 

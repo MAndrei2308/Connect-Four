@@ -2,7 +2,22 @@ import json
 
 
 class Statistics:
+    """
+    A class to represent game statistics.
+
+    The statistincs are stored in a JSON file and include rankings, winners and times for each game mode.
+
+    Attributes
+        filename(str): The name of the file to save the statistics to.
+        data(dict): A dictionary containing the game statistics.
+    """
     def __init__(self, filename = "statistics.json"):
+        """
+        Initializes the Statistics with the given filename.
+
+        Args:
+            filename(str): The name of the file to save the statistics to.
+        """
         self.filename = filename
         try:
             self.data = self.load_data(filename)
@@ -17,10 +32,22 @@ class Statistics:
 
 
     def save_data(self, filename):
+        """
+        Saves the game statistics to a file.
+
+        Args:
+            filename(str): The name of the file to save the statistics to.
+        """
         with open(filename, "w") as file:
             json.dump(self.data, file)
 
     def load_data(self, filename = "statistics.json"):
+        """
+        Loads the game statistics from a file.
+        
+        Args:
+            filename(str): The name of the file to load the statistics from.
+        """
         try:
             with open(filename, "r") as file:
                 data = file.read()
@@ -41,7 +68,17 @@ class Statistics:
             }
         
     def update_data(self, game_mode, player1, player2, winner, time, filename = "statistics.json"):
+        """
+        Updates the game statistics with the result of a game.
 
+        Args:
+            game_mode(str): The mode of the game (pvp, pvc_easy, pvc_medium, pvc_hard).
+            player1(str): The name of player 1.
+            player2(str): The name of player 2 or the AI difficulty.
+            winner(str): The name of the winner.
+            time(str): The time taken to complete the game.
+            filename(str): The name of the file to save the statistics to.
+        """
         if game_mode == "pvp":
             self.data["pvp"].append({
                 "rank": len(self.data["pvp"]) + 1,
@@ -89,6 +126,14 @@ class Statistics:
         self.save_data(filename)
 
     def end_game(self, winner, time, game_mode):
+        """
+        Ends the game and updates the statistics.
+
+        Args:
+            winner(str): The name of the winner.
+            time(str): The time taken to complete the game.
+            game_mode(str): The mode of the game (pvp, pvc_easy, pvc_medium, pvc_hard).
+        """
         if game_mode == "pvp":
             player1 = "Player 1"
             player2 = "Player 2"

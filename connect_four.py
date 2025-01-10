@@ -234,6 +234,11 @@ def if_terminal_input():
     return len(sys.argv) == 5
 
 if __name__ == "__main__":
+    """
+    The main function that runs the Connect Four game.
+
+    If the game parameters are provided, it creates a game instance and runs the game.
+    """
     if len(sys.argv) > 1:
         oponent_type, rows, columns, first_player = get_params()
     else:

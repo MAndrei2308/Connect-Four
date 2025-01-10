@@ -17,7 +17,7 @@ else:
     COLUMNS = 7
     first_player = "human"
 
-# Dimensiuni fereastra si afisare
+# Screen dimensions
 WIDTH = 700
 HEIGHT = 700
 
@@ -27,7 +27,7 @@ RADIUS = CELL_SIZE // 2 - 5
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Connect Four")
 
-# Colors
+# Colors(RGB)
 RED = (255, 0, 0)
 YELLOW = (255, 255, 0)
 GRAY = (169, 169, 169)
@@ -50,6 +50,23 @@ statistics = Statistics()
 
 
 def draw_button(text, text_color, text_font, x, y, width, height, color, hover_color):
+    """
+    Draws a button on the screen.
+
+    Args:
+        text (str): Text to be displayed on the button.
+        text_color (tuple): Color of the text.
+        text_font (pygame.font.Font): Font of the text.
+        x (int): x coordinate of the top-left corner of the button.
+        y (int): y coordinate of the top-left corner of the button.
+        width (int): Width of the button.
+        height (int): Height of the button.
+        color (tuple): Color(RGB) of the button.
+        hover_color (tuple): Color(RGB) of the button when hovered.
+
+    Returns:
+        bool: True if the button was clicked, False otherwise.
+    """
     mouse = pygame.mouse.get_pos()
     click = pygame.mouse.get_pressed()
 
@@ -68,6 +85,11 @@ def draw_button(text, text_color, text_font, x, y, width, height, color, hover_c
     return False
 
 def show_about():
+    """
+    Displays the about screen.
+
+    The screen shows information about the game.
+    """
     running = True
     while running:
         screen.fill(WHITE)
@@ -97,6 +119,11 @@ def show_about():
                 running = False
 
 def show_play():
+    """
+    Displays the play screen.
+
+    The player can choose between Player vs Player and Player vs Computer.
+    """
     running = True
     while running:
         screen.fill(WHITE)
@@ -122,6 +149,11 @@ def show_play():
                 running = False
 
 def show_pvc():
+    """
+    Displays the player vs computer screen.
+    
+    The player can choose the difficulty of the AI.
+    """
     running = True
     while running:
         screen.fill(WHITE)
@@ -151,6 +183,13 @@ def show_pvc():
                 running = False
 
 def start_pvc_game(difficulty):
+    """
+    Starts a Player vs Computer game.
+
+    Args:
+        difficulty (str): Difficulty of the AI. Can be "easy", "medium" or "hard".
+    """
+
     screen.fill(WHITE)
     ai_player = AI(difficulty)
     game = ConnectFour("Player", f"Computer {difficulty}", ROWS, COLUMNS, 1)
@@ -222,6 +261,14 @@ def start_pvc_game(difficulty):
                 turn = 1
 
 def show_pause_menu(difficulty):
+    """
+    Displays the pause menu.
+
+    The player can choose between Resume, Restart, Change difficulty, Back to menu and Quit.
+
+    Args:
+        difficulty (str): Difficulty of the AI. Can be "easy", "medium" or "hard" and help for restart a new game for same difficulty.
+    """
     running = True
     while running:
         screen.fill(WHITE)
@@ -280,6 +327,12 @@ def show_pause_menu(difficulty):
                 sys.exit()
                 
 def draw_board(board):
+    """
+    Draws the game board.
+
+    Args:
+        board (list): List of lists representing the game board.
+    """
     x_offset = (WIDTH - COLUMNS * CELL_SIZE) // 2
     y_offset = (HEIGHT - 100 - (ROWS * CELL_SIZE + CELL_SIZE)) // 2 + 10
     for row in range(ROWS):
@@ -295,13 +348,35 @@ def draw_board(board):
     pygame.display.update()
 
 def get_column(mouse_x):
+    """
+    Returns the column where the player clicked.
+
+    Args:
+        mouse_x (int): x coordinate of the mouse click.
+
+    Returns:
+        int: The column where the player clicked.
+    """
     x_offset = (WIDTH - COLUMNS * CELL_SIZE) // 2
     return (mouse_x - x_offset) // CELL_SIZE
 
 def if_click_on_board(mouse_x, mouse_y):
+    """
+    Checks if the mouse click is on the game board.
+
+    Args:
+        mouse_x (int): x coordinate of the mouse click.
+        mouse_y (int): y coordinate of the mouse click.
+
+    Returns:
+        bool: True if the mouse click is on the game board, False otherwise.
+    """
     return mouse_y > 100 and mouse_y < HEIGHT - 100 and mouse_x > (WIDTH - COLUMNS * CELL_SIZE) // 2 and mouse_x < WIDTH - (WIDTH - COLUMNS * CELL_SIZE) // 2
 
 def show_pvp():
+    """
+    Starts a Player vs Player game.
+    """
 
     screen.fill(WHITE)
     
@@ -361,6 +436,12 @@ def show_pvp():
                 
 
 def display_end_message(message):
+    """
+    Displays the end message.
+
+    Args:
+        message (str): The message to be displayed.
+    """
     screen.fill(WHITE)
     text_surface = FONT_MEDIUM.render(message, True, BLACK)
     screen.blit(text_surface, (WIDTH // 2 - text_surface.get_width() // 2, HEIGHT // 2))
@@ -368,6 +449,17 @@ def display_end_message(message):
     pygame.time.wait(3000)
 
 def draw_table(table, x, y, cell_width, cell_height, text_font = FONT_SUPER_SMALL):
+    """
+    Draws a table on the screen.
+
+    Args:
+        table (list): List of lists representing the table.
+        x (int): x coordinate of the top-left corner of the table.
+        y (int): y coordinate of the top-left corner of the table.
+        cell_width (int): Width of a cell in the table.
+        cell_height (int): Height of a cell in the table.
+        text_font (pygame.font.Font): Font of the text.
+    """
     for i, row in enumerate(table):
         for j, cell in enumerate(row):
             pygame.draw.rect(screen, BLACK, (x + j * cell_width, y + i * cell_height, cell_width, cell_height), 1)
@@ -376,6 +468,11 @@ def draw_table(table, x, y, cell_width, cell_height, text_font = FONT_SUPER_SMAL
 
 
 def show_statistics():
+    """
+    Displays the statistics screen.
+
+    The screen shows the top 3 games for each game mode.
+    """
     data = statistics.load_data()
     running = True
     while running:
@@ -429,6 +526,11 @@ def show_statistics():
             
 
 def show_menu():
+    """
+    Displays the main menu screen.
+
+    The player can choose between Play, About, Statistics and Exit.
+    """
     running = True
     while running:
         screen.fill(WHITE)
@@ -462,6 +564,11 @@ def show_menu():
                 sys.exit()
 
 if __name__ == "__main__":
+    """
+    Main entry point of the program.
+
+    If the input is not provided in the terminal, the game will start with the menu.
+    """
     if not if_terminal_input():
         show_menu()
     pygame.quit()
